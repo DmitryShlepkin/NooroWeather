@@ -10,7 +10,11 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            EmptyView()
+            SearchInputView(cityName: "")
+            Group {
+                EmptyView()
+            }
+            .frame(maxHeight: .infinity)
         }
     }
 }
