@@ -5,7 +5,7 @@
 //  Created by Dmitry Shlepkin on 1/29/25.
 //
 
-import SwiftUICore
+import SwiftUI
 
 extension Font {
 
