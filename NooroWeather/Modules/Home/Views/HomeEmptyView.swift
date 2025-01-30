@@ -1,5 +1,5 @@
 //
-//  EmptyView.swift
+//  HomeEmptyView.swift
 //  NooroWeather
 //
 //  Created by Dmitry Shlepkin on 1/29/25.
@@ -7,18 +7,19 @@
 
 import SwiftUI
 
-struct EmptyView: View {
-    
-    var viewModel = EmptyViewModel()
+struct HomeEmptyView: View {
+        
+    let title: String
+    let description: String
     
     var body: some View {
         VStack(spacing: 0) {
-            Text(viewModel.title)
+            Text(title)
                 .frame(height: 45)
                 .font(Font.Poppins(weight: 600, size: 30))
                 .foregroundColor(Color.weather.textPrimary)
                 .padding(8)
-            Text(viewModel.description)
+            Text(description)
                 .font(Font.Poppins(weight: 600, size: 15))
                 .foregroundColor(Color.weather.textPrimary)
         }
@@ -27,5 +28,9 @@ struct EmptyView: View {
 }
 
 #Preview {
-    EmptyView()
+    let viewModel = HomeViewModel()
+    HomeEmptyView(
+        title: viewModel.emptyTitle,
+        description: viewModel.emptyDescription
+    )
 }

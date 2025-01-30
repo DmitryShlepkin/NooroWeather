@@ -9,15 +9,16 @@ import SwiftUI
 
 struct SearchInputView: View {
     
-    @State var cityName: String
+    @Binding var searchText: String
+    let placeholderText: String
     
     var body: some View {
         HStack {
             HStack {
                 TextField(
                     "",
-                    text: $cityName,
-                    prompt: Text("Search Location").foregroundColor(Color.weather.textSecondary)
+                    text: $searchText,
+                    prompt: Text(placeholderText).foregroundColor(Color.weather.textSecondary)
                 )
                     .foregroundColor(Color.weather.textPrimary)
                 Image("icon.search")
@@ -33,5 +34,9 @@ struct SearchInputView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    SearchInputView(cityName: "")
+    @ObservedObject var viewModel = HomeViewModel()
+    SearchInputView(
+        searchText: $viewModel.searchText,
+        placeholderText: viewModel.searchPlaceholderText
+    )
 }

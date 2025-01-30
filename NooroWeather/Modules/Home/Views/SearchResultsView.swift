@@ -41,8 +41,6 @@ struct SearchResultsView: View {
             .background(Color.weather.backgroundPrimary)
             .cornerRadius(16)
             .padding([.leading, .trailing], 16)
-        
-        Spacer()
     }
 }
 
