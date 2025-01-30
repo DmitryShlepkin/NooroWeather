@@ -11,12 +11,12 @@ struct ContentView: View {
     var body: some View {
         VStack {
             SearchInputView(cityName: "")
-            Group {
+            VStack {
 //                EmptyView()
-                WeatherView()
+//                WeatherView()
+                SearchResultsView()
             }
-            .frame(maxHeight: .infinity)
-            Spacer()
+                .frame(maxHeight: .infinity)
         }
     }
 }

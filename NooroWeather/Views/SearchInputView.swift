@@ -28,7 +28,7 @@ struct SearchInputView: View {
             .cornerRadius(16)
             .font(Font.Poppins(size: 15))
         }
-        .padding(20)
+        .padding(24)
     }
 }
 

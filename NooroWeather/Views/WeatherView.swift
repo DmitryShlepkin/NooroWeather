@@ -11,6 +11,7 @@ struct WeatherView: View {
     var body: some View {
         VStack(spacing: 0) {
             Image("image.weather.sun")
+                .resizable()
                 .frame(width: 123, height: 123)
                 .padding(.init(top: 0, leading: 0, bottom: 16, trailing: 0))
             HStack {
@@ -19,6 +20,7 @@ struct WeatherView: View {
                     .foregroundColor(Color.weather.textPrimary)
                     .lineLimit(1)
                 Image("icon.location")
+                    .resizable()
                     .frame(width: 21, height: 21)
             }
                 .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
@@ -31,6 +33,7 @@ struct WeatherView: View {
                         .lineLimit(1)
                         .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
                     Image("icon.degree")
+                        .resizable()
                         .frame(width: 8, height: 8)
                         .padding(.init(top: 12, leading: 0, bottom: 0, trailing: 0))
                 }
