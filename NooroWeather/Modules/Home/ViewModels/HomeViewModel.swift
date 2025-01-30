@@ -22,6 +22,8 @@ enum HomeState {
 
 final class HomeViewModel: ObservableObject {
     
+    @Dependency var networkManager: NetworkManagable?
+    
     var state: HomeState = .empty
     var cancellables = Set<AnyCancellable>()
     
@@ -38,8 +40,11 @@ final class HomeViewModel: ObservableObject {
     private func subscribeToSearchText() {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
-            .sink(receiveValue: { value in
+            .sink(receiveValue: { [weak self] value in
                 print(value)
+                if !value.isEmpty && value.count > 3 {
+                    self?.networkManager?.request()
+                }
             })
             .store(in: &cancellables)
     }
