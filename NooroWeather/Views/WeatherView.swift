@@ -13,9 +13,10 @@ struct WeatherView: View {
             Image("image.weather.sun")
                 .resizable()
                 .frame(width: 123, height: 123)
-                .padding(.init(top: 0, leading: 0, bottom: 16, trailing: 0))
+                .padding(.bottom, 27)
             HStack {
                 Text("Mumbai")
+                    .frame(height: 30)
                     .font(Font.Poppins(weight: 600, size: 30))
                     .foregroundColor(Color.weather.textPrimary)
                     .lineLimit(1)
@@ -23,23 +24,24 @@ struct WeatherView: View {
                     .resizable()
                     .frame(width: 21, height: 21)
             }
-                .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .padding(.init(top: 0, leading: 16, bottom: 16, trailing: 16))
             HStack {
                 ZStack(alignment: .topTrailing) {
                     Text("45")
+                        .frame(height: 70)
                         .font(Font.Poppins(weight: 500, size: 70))
                         .foregroundColor(Color.weather.textPrimary)
                         .lineSpacing(20)
                         .lineLimit(1)
-                        .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+                        .padding([.leading, .trailing], 16)
                     Image("icon.degree")
                         .resizable()
                         .frame(width: 8, height: 8)
-                        .padding(.init(top: 12, leading: 0, bottom: 0, trailing: 0))
+                        .padding(0)
                 }
             }
             WeatherStatsView()
-                .padding(.init(top: 32, leading: 0, bottom: 0, trailing: 0))
+                .padding(.top, 36)
         }
     }
 }

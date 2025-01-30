@@ -12,8 +12,9 @@ struct EmptyView: View {
     var viewModel = EmptyViewModel()
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Text(viewModel.title)
+                .frame(height: 45)
                 .font(Font.Poppins(weight: 600, size: 30))
                 .foregroundColor(Color.weather.textPrimary)
                 .padding(8)

@@ -24,23 +24,24 @@ struct SearchResultsView: View {
                         .font(Font.Poppins(weight: 500, size: 60))
                         .foregroundColor(Color.weather.textPrimary)
                         .lineLimit(1)
-                        .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 8))
+                        .padding(.trailing, 8)
                     Image("icon.degree")
                         .resizable()
                         .frame(width: 5, height: 5)
-                        .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .padding(0)
                 }
             }
             Spacer()
             Image("image.weather.sun")
                 .resizable()
                 .frame(width: 84, height: 84)
-                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+                .padding(0)
         }
             .padding(.init(top: 16, leading: 30, bottom: 16, trailing: 30))
             .background(Color.weather.backgroundPrimary)
             .cornerRadius(16)
-            .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
+            .padding([.leading, .trailing], 16)
+        
         Spacer()
     }
 }
