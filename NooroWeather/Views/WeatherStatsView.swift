@@ -16,7 +16,7 @@ struct WeatherStatsView: View {
         }
         .frame(maxWidth: 254)
             .padding(16)
-            .background(Color.gray.opacity(0.2))
+            .background(Color.weather.backgroundPrimary)
             .cornerRadius(16)
     }
 }

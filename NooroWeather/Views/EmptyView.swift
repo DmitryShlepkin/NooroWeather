@@ -15,14 +15,15 @@ struct EmptyView: View {
         VStack {
             Text(viewModel.title)
                 .font(Font.Poppins(weight: 600, size: 30))
+                .foregroundColor(Color.weather.textPrimary)
                 .padding(8)
             Text(viewModel.description)
                 .font(Font.Poppins(weight: 600, size: 15))
+                .foregroundColor(Color.weather.textPrimary)
         }
         .padding()
     }
 }
-
 
 #Preview {
     EmptyView()

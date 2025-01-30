@@ -15,9 +15,11 @@ struct SearchInputView: View {
         HStack {
             HStack {
                 TextField(
-                    "Search Location",
-                    text: $cityName
+                    "",
+                    text: $cityName,
+                    prompt: Text("Search Location").foregroundColor(Color.weather.textSecondary)
                 )
+                    .foregroundColor(Color.weather.textPrimary)
                 Image("icon.search")
             }
             .frame(height: 14)
@@ -29,7 +31,6 @@ struct SearchInputView: View {
         .padding(20)
     }
 }
-
 
 #Preview(traits: .sizeThatFitsLayout) {
     SearchInputView(cityName: "")

@@ -16,15 +16,14 @@ struct WeatherStatsItemView: View {
         VStack(spacing: 4) {
             Text(label)
                 .font(Font.Poppins(size: 12))
-                .foregroundColor(Color.gray.opacity(0.8))
+                .foregroundColor(Color.weather.textSecondary)
             Text(value)
                 .font(Font.Poppins(weight: 500, size: 15))
-                .foregroundColor(Color.gray.opacity(0.8))
+                .foregroundColor(Color.weather.textMediumGray)
         }
             .frame(minWidth: 60)
     }
 }
-
 
 #Preview {
     WeatherStatsItemView(label: "Humidity", value: "20%")

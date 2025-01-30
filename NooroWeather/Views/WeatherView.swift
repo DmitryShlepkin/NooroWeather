@@ -16,6 +16,7 @@ struct WeatherView: View {
             HStack {
                 Text("Mumbai")
                     .font(Font.Poppins(weight: 600, size: 30))
+                    .foregroundColor(Color.weather.textPrimary)
                     .lineLimit(1)
                 Image("icon.location")
                     .frame(width: 21, height: 21)
@@ -25,6 +26,7 @@ struct WeatherView: View {
                 ZStack(alignment: .topTrailing) {
                     Text("45")
                         .font(Font.Poppins(weight: 500, size: 70))
+                        .foregroundColor(Color.weather.textPrimary)
                         .lineSpacing(20)
                         .lineLimit(1)
                         .padding(.init(top: 0, leading: 16, bottom: 0, trailing: 16))
