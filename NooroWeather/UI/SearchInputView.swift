@@ -21,6 +21,7 @@ struct SearchInputView: View {
                     prompt: Text(placeholderText).foregroundColor(Color.weather.textSecondary)
                 )
                     .foregroundColor(Color.weather.textPrimary)
+                    .autocorrectionDisabled(true)
                 Image("icon.search")
             }
             .frame(height: 14)
