@@ -22,6 +22,7 @@ struct NooroWeatherApp: App {
     
     private func registerDependencies() {
         DependencyContainer.register(type: NetworkManagable.self, NetworkManager())
+        DependencyContainer.register(type: ConfigurationManagable.self, ConfigurationManager())
     }
     
 }

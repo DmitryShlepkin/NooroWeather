@@ -88,4 +88,4 @@ fastlane/Appfile
 
 .idea/
 *.DS_Store
-
+Config.xcconfig

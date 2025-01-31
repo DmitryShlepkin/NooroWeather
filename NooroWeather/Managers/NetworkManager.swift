@@ -13,12 +13,18 @@ protocol NetworkManagable {
 
 final class NetworkManager: NetworkManagable {
     
+    @Dependency var configurationManager: ConfigurationManagable?
+    
     func fetchCurrentWeather(for queryString: String) async -> Weather? {
+        guard let APIKey = configurationManager?.getValueFromInfo(for: "WEATHER_API_KEY") else {
+            return nil
+        }
+        print(">>>", APIKey)
         do {
             return try await request(
                 url: "https://api.weatherapi.com/v1/current.json",
                 parameters: [
-                    "key": "",
+                    "key": APIKey,
                     "q": queryString,
                     "aqi": "no"
                 ],
