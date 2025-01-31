@@ -8,42 +8,31 @@
 import SwiftUI
 
 struct SearchResultsView: View {
+    
+    @EnvironmentObject var viewModel: HomeViewModel
+    
     var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                Text("Mumbai")
-                    .frame(height: 30)
-                    .padding(.bottom, 12)
-                    .font(Font.Poppins(weight: 600, size: 20))
-                    .foregroundColor(Color.weather.textPrimary)
-                    .lineSpacing(0)
-                    .lineLimit(1)
-                ZStack(alignment: .topTrailing) {
-                    Text("20")
-                        .frame(height: 42)
-                        .font(Font.Poppins(weight: 500, size: 60))
-                        .foregroundColor(Color.weather.textPrimary)
-                        .lineLimit(1)
-                        .padding(.trailing, 8)
-                    Image("icon.degree")
-                        .resizable()
-                        .frame(width: 5, height: 5)
-                        .padding(0)
+        VStack {
+            ForEach(viewModel.searchResults, id: \.self.id) { item in
+                if let name = item.name {
+                    SearchResultsItemView(
+                        name: name,
+                        temp_c: item.temp_c
+                    )
+                        .onTapGesture { view in
+                            viewModel.didTapLocation(location: name)
+                        }
                 }
             }
-            Spacer()
-            Image("image.weather.sun")
-                .resizable()
-                .frame(width: 84, height: 84)
-                .padding(0)
         }
-            .padding(.init(top: 16, leading: 30, bottom: 16, trailing: 30))
-            .background(Color.weather.backgroundPrimary)
-            .cornerRadius(16)
-            .padding([.leading, .trailing], 16)
     }
 }
 
 #Preview {
     SearchResultsView()
+        .environmentObject(HomeViewModel(searchResults: [
+            .init(id: 1, name: "Columbus", region: "Ohio", temp_c: nil),
+            .init(id: 2, name: "Cleveland", region: "Ohio", temp_c: nil),
+            .init(id: 3, name: "Cincinnati", region: "Ohio", temp_c: nil)
+        ]))
 }

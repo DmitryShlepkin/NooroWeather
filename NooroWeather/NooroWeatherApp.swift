@@ -16,7 +16,8 @@ struct NooroWeatherApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HomeView(viewModel: HomeViewModel())
+            HomeView()
+                .environmentObject(HomeViewModel())
         }
     }
     

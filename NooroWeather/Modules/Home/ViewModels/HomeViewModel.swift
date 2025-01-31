@@ -39,22 +39,30 @@ final class HomeViewModel: ObservableObject {
         subscribeToSearchText()
     }
     
+    /// Initializer added for mocking and testing purposes
+    internal init(searchResults: [Search]) {
+        self.searchResults = searchResults
+    }
+    
+    /// Subscribe to Search Text Input chage.
     private func subscribeToSearchText() {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 print(value)
-                if !value.isEmpty && value.count > 2{
+                if !value.isEmpty && value.count > 2 {
                     Task {
-//                        await self?.fetchSearch(for: value)
-                        await self?.fetchWeather()
+                        await self?.fetchSearch(for: value)
                     }
+                } else {
+                    print("Reset Search")
                 }
             })
             .store(in: &cancellables)
     }
     
-    private func fetchWeather() async {
+    /// Fetch weather for location.
+    private func fetchWeather(for value: String) async {
         state = .loading(useCase: .weather)
         do {
             guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: "Columbus") else {
@@ -63,18 +71,16 @@ final class HomeViewModel: ObservableObject {
             }
             state = .loaded(useCase: .weather)
             await MainActor.run {
-                print(weather)
                 self.weather = weather
             }
         } catch {
-            print(">>>>> error")
             state = .error
         }
     }
     
+    /// Fetch location search.
     private func fetchSearch(for query: String) async {
         state = .loading(useCase: .search)
-        print(">>>>", query)
         do {
             guard let searchResults = try await weatherApiManager?.fetchSearch(for: query) else {
                 state = .error
@@ -82,13 +88,59 @@ final class HomeViewModel: ObservableObject {
             }
             state = .loaded(useCase: .search)
             await MainActor.run {
-                print(">>>>", searchResults)
                 self.searchResults = searchResults
             }
+            await self.fetchWeatherForSearchResults()
         } catch {
-            print(">>>>> error")
             state = .error
         }
+    }
+    
+    /// Fetch weather for every search result.
+    func fetchWeatherForSearchResults() async {
+        let weatherResults: [Weather?] = await withTaskGroup(
+            of: Weather?.self,
+            returning: [Weather?].self
+        ) { [self] group in
+            var weather: [Weather?] = []
+            for item in self.searchResults {
+                if let name = item.name {
+                    group.addTask {
+                        return try? await self.weatherApiManager?.fetchCurrentWeather(for: name)
+                    }
+                }
+            }
+            for await result in group {
+                weather.append(result)
+            }
+            return weather
+        }
+        await updateSearchResults(with: weatherResults)
+    }
+    
+    /// Update search results with weather if possible.
+    private func updateSearchResults(with weatherResults: [Weather?]) async {
+        let updateSearchResults = searchResults.map { item in
+            let weatherForItem = weatherResults.first(where: { $0?.location?.name == item.name })
+            var temperature: Double? = nil
+            if let weatherForItem {
+                temperature = weatherForItem?.current?.temp_c
+            }
+            return Search(
+                id: item.id,
+                name: item.name,
+                region: item.region,
+                temp_c: temperature
+            )
+        }
+        await MainActor.run {
+            searchResults = updateSearchResults
+        }
+    }
+    
+    /// Search result tap handler
+    func didTapLocation(location: String) {
+        print("didTapLocation", location)
     }
     
 }

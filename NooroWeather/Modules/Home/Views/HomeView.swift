@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    
-    @ObservedObject var viewModel: HomeViewModel
+        
+    @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
         VStack {
@@ -40,5 +40,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(viewModel: HomeViewModel())
+    HomeView()
+        .environmentObject(HomeViewModel())
 }
