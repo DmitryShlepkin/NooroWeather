@@ -19,7 +19,9 @@ struct HomeView: View {
             )
             VStack(spacing: 0) {
                 Spacer()
-                    .visible(viewModel.state == .empty)
+                    .visible(viewModel.state == .empty || viewModel.state == .error)
+                ErrorView()
+                    .visible(viewModel.state == .error)
                 HomeEmptyView(
                     title: viewModel.emptyTitle,
                     description: viewModel.emptyDescription
