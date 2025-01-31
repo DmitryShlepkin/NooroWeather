@@ -29,11 +29,11 @@ final class HomeViewModel: ObservableObject {
     
     let emptyTitle = "No City Selected"
     let emptyDescription = "Please Search For a City"
-        
-    @Published var searchText: String = ""
     let searchPlaceholderText: String = "Search Location"
     
+    @Published var searchText: String = ""
     @Published var weather: Weather?
+    @Published var searchResults: [Search] = []
     
     init() {
         subscribeToSearchText()
@@ -44,8 +44,9 @@ final class HomeViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 print(value)
-                if !value.isEmpty && value.count > 3 {
+                if !value.isEmpty && value.count > 2{
                     Task {
+//                        await self?.fetchSearch(for: value)
                         await self?.fetchWeather()
                     }
                 }
@@ -55,12 +56,37 @@ final class HomeViewModel: ObservableObject {
     
     private func fetchWeather() async {
         state = .loading(useCase: .weather)
-        if let weather = await weatherApiManager?.fetchCurrentWeather(for: "Columbus") {
+        do {
+            guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: "Columbus") else {
+                state = .error
+                return
+            }
             state = .loaded(useCase: .weather)
             await MainActor.run {
+                print(weather)
                 self.weather = weather
             }
-        } else {
+        } catch {
+            print(">>>>> error")
+            state = .error
+        }
+    }
+    
+    private func fetchSearch(for query: String) async {
+        state = .loading(useCase: .search)
+        print(">>>>", query)
+        do {
+            guard let searchResults = try await weatherApiManager?.fetchSearch(for: query) else {
+                state = .error
+                return
+            }
+            state = .loaded(useCase: .search)
+            await MainActor.run {
+                print(">>>>", searchResults)
+                self.searchResults = searchResults
+            }
+        } catch {
+            print(">>>>> error")
             state = .error
         }
     }

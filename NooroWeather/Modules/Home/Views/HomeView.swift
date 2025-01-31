@@ -28,7 +28,8 @@ struct HomeView: View {
                 WeatherView()
                     .visible(viewModel.state == .loaded(useCase: .weather))
                     .padding(.top, 50)
-//                SearchResultsView()
+                SearchResultsView()
+                    .visible(viewModel.state == .loaded(useCase: .search))
                 Spacer()
             }
                 .frame(maxHeight: .infinity)

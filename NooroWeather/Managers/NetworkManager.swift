@@ -13,6 +13,17 @@ protocol NetworkManagable {
 
 final class NetworkManager: NetworkManagable {
         
+    enum NetworkError: Error {
+        case statusCode(statusCode: Int)
+    }
+    
+    
+    /// Request Data from network.
+    /// - Parameters:
+    ///   - url: URL strinf.
+    ///   - parameters: Dictionary with request get parameters.
+    ///   - as: Response type, used for decode data from response
+    /// - Returns: Decoded data.
     func request<T:Codable>(url urlString: String, parameters: [String: String]? = nil, as type: T.Type) async throws -> T? {
         
         var urlComponents = URLComponents(string: urlString)
@@ -28,7 +39,16 @@ final class NetworkManager: NetworkManagable {
             return nil
         }
 
-        let (data, _) = try await URLSession.shared.data(from: url)
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
+            throw NetworkError.statusCode(statusCode: -1)
+        }
+
+        guard (200...299).contains(statusCode) else {
+            throw NetworkError.statusCode(statusCode: statusCode)
+        }
+        
         return try JSONDecoder().decode(T.self, from: data)
     }
             
