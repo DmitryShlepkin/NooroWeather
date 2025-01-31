@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct WeatherView: View {
+    
+    @EnvironmentObject var viewModel: HomeViewModel
+    
     var body: some View {
         VStack(spacing: 0) {
             Image("image.weather.sun")
@@ -15,7 +18,7 @@ struct WeatherView: View {
                 .frame(width: 123, height: 123)
                 .padding(.bottom, 27)
             HStack {
-                Text("Mumbai")
+                Text(viewModel.weather?.location?.name ?? "")
                     .frame(height: 30)
                     .font(Font.Poppins(weight: 600, size: 30))
                     .foregroundColor(Color.weather.textPrimary)
@@ -27,7 +30,7 @@ struct WeatherView: View {
                 .padding(.init(top: 0, leading: 16, bottom: 16, trailing: 16))
             HStack {
                 ZStack(alignment: .topTrailing) {
-                    Text("45")
+                    Text("\(Int(viewModel.weather?.current?.temp_c ?? 0))")
                         .frame(height: 70)
                         .font(Font.Poppins(weight: 500, size: 70))
                         .foregroundColor(Color.weather.textPrimary)
@@ -48,4 +51,5 @@ struct WeatherView: View {
 
 #Preview {
     WeatherView()
+        .environmentObject(HomeViewModel())
 }

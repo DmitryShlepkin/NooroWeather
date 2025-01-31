@@ -63,9 +63,13 @@ final class HomeViewModel: ObservableObject {
     
     /// Fetch weather for location.
     private func fetchWeather(for value: String, region: String? = nil) async {
+        var name = value
+        if let region {
+            name += ", \(region)"
+        }
         state = .loading(useCase: .weather)
         do {
-            guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: "Columbus") else {
+            guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
                 state = .error
                 return
             }
@@ -143,7 +147,15 @@ final class HomeViewModel: ObservableObject {
     
     /// Search result tap handler
     func didTapLocation(name: String, region: String) {
-        print("didTapLocation", name, region)
+        Task {
+            await fetchWeather(for: name, region: region)
+            await resetSearchText()
+        }
+    }
+    
+    /// Reset search text input value.
+    @MainActor func resetSearchText() {
+        searchText = ""
     }
     
 }
