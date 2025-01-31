@@ -18,12 +18,15 @@ struct HomeView: View {
                 placeholderText: viewModel.searchPlaceholderText
             )
             VStack(spacing: 0) {
-//                Spacer()
-//                HomeEmptyView(
-//                    title: viewModel.emptyTitle,
-//                    description: viewModel.emptyDescription
-//                )
+                Spacer()
+                    .visible(viewModel.state == .empty)
+                HomeEmptyView(
+                    title: viewModel.emptyTitle,
+                    description: viewModel.emptyDescription
+                )
+                    .visible(viewModel.state == .empty)
                 WeatherView()
+                    .visible(viewModel.state == .loaded(useCase: .weather))
                     .padding(.top, 50)
 //                SearchResultsView()
                 Spacer()

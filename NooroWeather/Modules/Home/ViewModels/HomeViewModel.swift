@@ -13,7 +13,7 @@ enum HomeUseCase {
     case search
 }
 
-enum HomeState {
+enum HomeState: Equatable {
     case loading(useCase: HomeUseCase)
     case loaded(useCase: HomeUseCase)
     case empty
@@ -33,6 +33,8 @@ final class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
     let searchPlaceholderText: String = "Search Location"
     
+    @Published var weather: Weather?
+    
     init() {
         subscribeToSearchText()
     }
@@ -43,10 +45,24 @@ final class HomeViewModel: ObservableObject {
             .sink(receiveValue: { [weak self] value in
                 print(value)
                 if !value.isEmpty && value.count > 3 {
-                    self?.networkManager?.request()
+                    Task {
+                        await self?.fetchWeather()
+                    }
                 }
             })
             .store(in: &cancellables)
+    }
+    
+    private func fetchWeather() async {
+        state = .loading(useCase: .weather)
+        if let weather = await networkManager?.fetchCurrentWeather(for: "Columbus") {
+            state = .loaded(useCase: .weather)
+            await MainActor.run {
+                self.weather = weather
+            }
+        } else {
+            state = .error
+        }
     }
     
 }

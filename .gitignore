@@ -84,6 +84,7 @@ fastlane/Appfile
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
+*.xcodeproj/xcuserdata/
 
 .idea/
 *.DS_Store
