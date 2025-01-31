@@ -8,34 +8,12 @@
 import Foundation
 
 protocol NetworkManagable {
-    func fetchCurrentWeather(for: String) async -> Weather?
+    func request<T:Codable>(url urlString: String, parameters: [String: String]?, as type: T.Type) async throws -> T?
 }
 
 final class NetworkManager: NetworkManagable {
-    
-    @Dependency var configurationManager: ConfigurationManagable?
-    
-    func fetchCurrentWeather(for queryString: String) async -> Weather? {
-        guard let APIKey = configurationManager?.getValueFromInfo(for: "WEATHER_API_KEY") else {
-            return nil
-        }
-        print(">>>", APIKey)
-        do {
-            return try await request(
-                url: "https://api.weatherapi.com/v1/current.json",
-                parameters: [
-                    "key": APIKey,
-                    "q": queryString,
-                    "aqi": "no"
-                ],
-                as: Weather.self
-            )
-        } catch {
-            return nil
-        }
-    }
-    
-    private func request<T:Codable>(url urlString: String, parameters: [String: String]? = nil, as type: T.Type) async throws -> T? {
+        
+    func request<T:Codable>(url urlString: String, parameters: [String: String]? = nil, as type: T.Type) async throws -> T? {
         
         var urlComponents = URLComponents(string: urlString)
         

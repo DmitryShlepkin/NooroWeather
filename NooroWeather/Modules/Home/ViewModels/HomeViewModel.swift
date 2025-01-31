@@ -22,7 +22,7 @@ enum HomeState: Equatable {
 
 final class HomeViewModel: ObservableObject {
     
-    @Dependency var networkManager: NetworkManagable?
+    @Dependency var weatherApiManager: WeatherApiManagable?
     
     var state: HomeState = .empty
     var cancellables = Set<AnyCancellable>()
@@ -55,7 +55,7 @@ final class HomeViewModel: ObservableObject {
     
     private func fetchWeather() async {
         state = .loading(useCase: .weather)
-        if let weather = await networkManager?.fetchCurrentWeather(for: "Columbus") {
+        if let weather = await weatherApiManager?.fetchCurrentWeather(for: "Columbus") {
             state = .loaded(useCase: .weather)
             await MainActor.run {
                 self.weather = weather
