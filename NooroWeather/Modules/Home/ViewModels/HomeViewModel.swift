@@ -62,7 +62,7 @@ final class HomeViewModel: ObservableObject {
     }
     
     /// Fetch weather for location.
-    private func fetchWeather(for value: String) async {
+    private func fetchWeather(for value: String, region: String? = nil) async {
         state = .loading(useCase: .weather)
         do {
             guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: "Columbus") else {
@@ -104,7 +104,10 @@ final class HomeViewModel: ObservableObject {
         ) { [self] group in
             var weather: [Weather?] = []
             for item in self.searchResults {
-                if let name = item.name {
+                if var name = item.name {
+                    if let region = item.region {
+                        name += ", \(region)"
+                    }
                     group.addTask {
                         return try? await self.weatherApiManager?.fetchCurrentWeather(for: name)
                     }
@@ -121,7 +124,7 @@ final class HomeViewModel: ObservableObject {
     /// Update search results with weather if possible.
     private func updateSearchResults(with weatherResults: [Weather?]) async {
         let updateSearchResults = searchResults.map { item in
-            let weatherForItem = weatherResults.first(where: { $0?.location?.name == item.name })
+            let weatherForItem = weatherResults.first(where: { $0?.location?.name == item.name && $0?.location?.region == item.region })
             var temperature: Double? = nil
             if let weatherForItem {
                 temperature = weatherForItem?.current?.temp_c
@@ -139,8 +142,8 @@ final class HomeViewModel: ObservableObject {
     }
     
     /// Search result tap handler
-    func didTapLocation(location: String) {
-        print("didTapLocation", location)
+    func didTapLocation(name: String, region: String) {
+        print("didTapLocation", name, region)
     }
     
 }

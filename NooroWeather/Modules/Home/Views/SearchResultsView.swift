@@ -20,7 +20,7 @@ struct SearchResultsView: View {
                         temp_c: item.temp_c
                     )
                         .onTapGesture { view in
-                            viewModel.didTapLocation(location: name)
+                            viewModel.didTapLocation(name: name, region: item.region ?? "")
                         }
                 }
             }
