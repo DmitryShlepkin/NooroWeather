@@ -23,6 +23,7 @@ enum HomeState: Equatable {
 final class HomeViewModel: ObservableObject {
     
     @Dependency var weatherApiManager: WeatherApiManagable?
+    @Dependency var persistenceManager: PersistenceManagable?
     
     var state: HomeState = .empty
     var cancellables = Set<AnyCancellable>()
@@ -37,6 +38,7 @@ final class HomeViewModel: ObservableObject {
     
     init() {
         subscribeToSearchText()
+        checkForSavedLocation()
     }
     
     /// Initializer added for mocking and testing purposes
@@ -49,13 +51,12 @@ final class HomeViewModel: ObservableObject {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
-                print(value)
                 if !value.isEmpty && value.count > 2 {
                     Task {
                         await self?.fetchSearch(for: value)
                     }
                 } else {
-                    print("Reset Search")
+                    /// Reset search
                 }
             })
             .store(in: &cancellables)
@@ -150,12 +151,25 @@ final class HomeViewModel: ObservableObject {
         Task {
             await fetchWeather(for: name, region: region)
             await resetSearchText()
+            persistenceManager?.saveLocation(for: name, region: region)
         }
     }
     
     /// Reset search text input value.
     @MainActor func resetSearchText() {
         searchText = ""
+    }
+    
+    /// Check for saved location in persistence container.
+    private func checkForSavedLocation() {
+        guard
+            let location = persistenceManager?.loadLocation(),
+            let name = location.name else {
+            return
+        }
+        Task {
+            await fetchWeather(for: name, region: location.region)
+        }
     }
     
 }

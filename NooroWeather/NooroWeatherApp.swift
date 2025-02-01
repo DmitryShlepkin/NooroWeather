@@ -25,6 +25,7 @@ struct NooroWeatherApp: App {
         DependencyContainer.register(type: NetworkManagable.self, NetworkManager())
         DependencyContainer.register(type: ConfigurationManagable.self, ConfigurationManager())
         DependencyContainer.register(type: WeatherApiManagable.self, WeatherApiManager())
+        DependencyContainer.register(type: PersistenceManagable.self, PersistenceManager())
     }
     
 }

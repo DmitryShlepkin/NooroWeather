@@ -17,10 +17,9 @@ final class NetworkManager: NetworkManagable {
         case statusCode(statusCode: Int)
     }
     
-    
     /// Request Data from network.
     /// - Parameters:
-    ///   - url: URL strinf.
+    ///   - url: URL string.
     ///   - parameters: Dictionary with request get parameters.
     ///   - as: Response type, used for decode data from response
     /// - Returns: Decoded data.
