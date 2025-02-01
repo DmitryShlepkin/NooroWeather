@@ -11,6 +11,7 @@ struct SearchResultsItemView: View {
 
     let name: String
     let temp_c: Double?
+    let iconUrl: URL?
     
     var body: some View {
         HStack(spacing: 0) {
@@ -45,11 +46,15 @@ struct SearchResultsItemView: View {
                 .frame(height: 42)
             }
             Spacer()
-            Image("image.weather.sun")
-                .resizable()
+            AsyncImage(url: iconUrl)
+                { image in
+                    image.resizable()
+                }
+                placeholder: {
+                    Color.weather.backgroundSecondary
+                }
                 .frame(width: 84, height: 84)
                 .padding(0)
-                .redacted(reason: .placeholder)
         }
             .padding(.init(top: 16, leading: 30, bottom: 16, trailing: 30))
             .background(Color.weather.backgroundPrimary)

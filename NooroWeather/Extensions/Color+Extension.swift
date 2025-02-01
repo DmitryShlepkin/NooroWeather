@@ -16,6 +16,7 @@ struct WeatherColors {
     let textSecondary: Color = .init(hex: "#C4C4C4")
     let textMediumGray: Color = .init(hex: "#9A9A9A")
     let backgroundPrimary: Color = .init(hex: "#F2F2F2")
+    let backgroundSecondary: Color = .init(hex: "#DEDEDE")
 }
 
 extension Color {

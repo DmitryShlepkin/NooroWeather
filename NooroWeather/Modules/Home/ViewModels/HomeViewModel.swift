@@ -36,6 +36,10 @@ final class HomeViewModel: ObservableObject {
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
     
+    var weatherImageUrl: URL? {
+        getUrlFrom(string: weather?.current?.condition?.icon)
+    }
+    
     init() {
         subscribeToSearchText()
         checkForSavedLocation()
@@ -131,21 +135,24 @@ final class HomeViewModel: ObservableObject {
         let updateSearchResults = searchResults.map { item in
             let weatherForItem = weatherResults.first(where: { $0?.location?.name == item.name && $0?.location?.region == item.region })
             var temperature: Double? = nil
+            var icon: String? = nil
             if let weatherForItem {
                 temperature = weatherForItem?.current?.temp_c
+                icon = weatherForItem?.current?.condition?.icon
             }
             return Search(
                 id: item.id,
                 name: item.name,
                 region: item.region,
-                temp_c: temperature
+                temp_c: temperature,
+                icon: icon
             )
         }
         await MainActor.run {
             searchResults = updateSearchResults
         }
     }
-    
+
     /// Search result tap handler
     func didTapLocation(name: String, region: String) {
         Task {
@@ -154,12 +161,12 @@ final class HomeViewModel: ObservableObject {
             persistenceManager?.saveLocation(for: name, region: region)
         }
     }
-    
+
     /// Reset search text input value.
     @MainActor func resetSearchText() {
         searchText = ""
     }
-    
+
     /// Check for saved location in persistence container.
     private func checkForSavedLocation() {
         guard
@@ -170,6 +177,12 @@ final class HomeViewModel: ObservableObject {
         Task {
             await fetchWeather(for: name, region: location.region)
         }
+    }
+  
+    func getUrlFrom(string urlString: String?) -> URL? {
+        guard var urlString else { return nil }
+        urlString = urlString.replacingOccurrences(of: "64x64", with: "128x128")
+        return URL(string: "https:\(urlString)")
     }
     
 }

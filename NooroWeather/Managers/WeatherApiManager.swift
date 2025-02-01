@@ -29,8 +29,8 @@ final class WeatherApiManager: WeatherApiManagable {
         }
         do {
             return try await networkManager?.request(
-//                url: "https://api.weatherapi.com/v1/current.json",
-                url: "http://localhost:3232/current.json",
+                url: "https://api.weatherapi.com/v1/current.json",
+//                url: "http://localhost:3232/current.json",
                 parameters: [
                     "key": APIKey,
                     "q": queryString,
@@ -49,8 +49,8 @@ final class WeatherApiManager: WeatherApiManagable {
         }
         do {
             return try await networkManager?.request(
-//                url: "https://api.weatherapi.com/v1/search.json",
-                url: "http://localhost:3232/search.json",
+                url: "https://api.weatherapi.com/v1/search.json",
+//                url: "http://localhost:3232/search.json",
                 parameters: [
                     "key": APIKey,
                     "q": queryString

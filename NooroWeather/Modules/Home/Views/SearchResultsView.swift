@@ -17,7 +17,8 @@ struct SearchResultsView: View {
                 if let name = item.name {
                     SearchResultsItemView(
                         name: name,
-                        temp_c: item.temp_c
+                        temp_c: item.temp_c,
+                        iconUrl: viewModel.getUrlFrom(string: item.icon)
                     )
                         .onTapGesture { view in
                             viewModel.didTapLocation(name: name, region: item.region ?? "")

@@ -13,10 +13,17 @@ struct WeatherView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Image("image.weather.sun")
-                .resizable()
+            AsyncImage(url: viewModel.weatherImageUrl) { image in
+                image.resizable()
+            } placeholder: {
+                Color.weather.backgroundPrimary
+            }
                 .frame(width: 123, height: 123)
                 .padding(.bottom, 27)
+//            Image("image.weather.sun")
+//                .resizable()
+//                .frame(width: 123, height: 123)
+//                .padding(.bottom, 27)
             HStack {
                 Text(viewModel.weather?.location?.name ?? "")
                     .frame(height: 30)

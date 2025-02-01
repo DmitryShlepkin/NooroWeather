@@ -19,7 +19,7 @@ struct Current: Codable {
 }
 
 struct Condition: Codable {
-    let code: Int?
+    let icon: String?
 }
 
 struct Weather: Codable {

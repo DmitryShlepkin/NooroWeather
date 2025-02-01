@@ -10,4 +10,5 @@ struct Search: Codable, Hashable {
     let name: String?
     let region: String?
     var temp_c: Double?
+    var icon: String?
 }
