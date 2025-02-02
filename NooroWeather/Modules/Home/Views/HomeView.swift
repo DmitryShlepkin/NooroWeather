@@ -12,7 +12,6 @@ struct HomeView: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
-        Text("\(viewModel.state)")
         VStack {
             SearchInputView()
             VStack(spacing: 0) {
@@ -28,11 +27,13 @@ struct HomeView: View {
                 WeatherView()
                     .visible(viewModel.state == .loaded(useCase: .weather))
                     .padding(.top, 50)
-                SearchResultsView()
+                ScrollView(.vertical, showsIndicators: false) {
+                    SearchResultsView()
+                }
                     .visible(viewModel.state == .loaded(useCase: .search))
                 Spacer()
             }
-                .frame(maxHeight: .infinity)
+            .frame(maxHeight: .infinity)
         }
         .background(Color.white)
         .onTapGesture {

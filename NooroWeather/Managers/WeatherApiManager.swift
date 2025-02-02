@@ -17,6 +17,7 @@ final class WeatherApiManager: WeatherApiManagable {
     @Dependency var configurationManager: ConfigurationManagable?
     @Dependency var networkManager: NetworkManagable?
     
+    private var host = "https://api.weatherapi.com/v1"
     private var APIKey: String?
     
     init() {
@@ -29,8 +30,7 @@ final class WeatherApiManager: WeatherApiManagable {
         }
         do {
             return try await networkManager?.request(
-//                url: "https://api.weatherapi.com/v1/current.json",
-                url: "http://localhost:3232/current.json",
+                url: "\(host)/current.json",
                 parameters: [
                     "key": APIKey,
                     "q": queryString,
@@ -49,8 +49,7 @@ final class WeatherApiManager: WeatherApiManagable {
         }
         do {
             return try await networkManager?.request(
-//                url: "https://api.weatherapi.com/v1/search.json",
-                url: "http://localhost:3232/search.json",
+                url: "\(host)/search.json",
                 parameters: [
                     "key": APIKey,
                     "q": queryString

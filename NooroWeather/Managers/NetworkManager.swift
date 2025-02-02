@@ -37,7 +37,7 @@ final class NetworkManager: NetworkManagable {
         guard let url = urlComponents?.url else {
             return nil
         }
-
+        
         let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {

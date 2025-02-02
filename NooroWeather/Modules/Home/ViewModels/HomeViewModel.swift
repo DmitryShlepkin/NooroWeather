@@ -20,20 +20,33 @@ enum HomeState: Equatable {
     case error
 }
 
+/// Note: There are many ways to hold strings in the project.
+/// Strings catalog with manager injected as dependency is the best approach in my opition, but
+/// I decided to keep demo project simple as possible.
+struct HomeViewModelStrings {
+    static let emptyTitle = "No City Selected"
+    static let emptyDescription = "Please Search For a City"
+    static let searchPlaceholderText = "Search Location"
+    static let errorTitle = "Error"
+    static let errorDescription = "Please, try again later."
+    static let noconnectionTitle = "No Internet Connection"
+}
+
 final class HomeViewModel: ObservableObject {
     
     @Dependency var weatherApiManager: WeatherApiManagable?
     @Dependency var persistenceManager: PersistenceManagable?
     @Dependency var connectionManager: ConnectionManagable?
     
-    var cancellables = Set<AnyCancellable>()
+    let searchTextPublisher = PassthroughSubject<String, Never>()
     
-    let searchTextPublisher = PassthroughSubject<String, Never>()    
-    let emptyTitle = "No City Selected"
-    let emptyDescription = "Please Search For a City"
-    let searchPlaceholderText: String = "Search Location"
+    var cancellables = Set<AnyCancellable>()
+    var emptyTitle: String { HomeViewModelStrings.emptyTitle }
+    var emptyDescription: String { HomeViewModelStrings.emptyDescription }
+    var searchPlaceholderText: String { HomeViewModelStrings.searchPlaceholderText}
     
     @Published var state: HomeState = .empty
+    @Published var searchText = ""
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
     @Published var errorText: String = ""
@@ -91,7 +104,10 @@ extension HomeViewModel {
                 }
             } else {
                 Task {
-                    await self?.setError(text: "No Internet Connection", description: "Please, try again later.")
+                    await self?.setError(
+                        title: HomeViewModelStrings.noconnectionTitle,
+                        description: HomeViewModelStrings.errorDescription
+                    )
                 }
             }
         }
@@ -109,6 +125,7 @@ extension HomeViewModel {
     ///   - name: Location name.
     ///   - region: Location region.
     func didTapLocation(name: String, region: String) {
+        searchText = ""
         Task {
             await fetchWeather(for: name, region: region)
             persistenceManager?.saveLocation(for: name, region: region)
@@ -137,7 +154,9 @@ extension HomeViewModel {
         if let region {
             name += ", \(region)"
         }
-        state = .loading(useCase: .weather)
+        await MainActor.run {
+            state = .loading(useCase: .weather)
+        }
         do {
             guard let currentWeather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
                 await setNetworkError()
@@ -224,12 +243,9 @@ extension HomeViewModel {
     @MainActor private func reset() {
         if weather != nil {
             state = .loaded(useCase: .weather)
-            print("state", state)
         } else {
             state = .empty
-            print("state", state)
         }
-        print(">>>>>", state)
     }
 
     /// Check for saved location in persistence container.
@@ -246,16 +262,19 @@ extension HomeViewModel {
   
     /// Set network error.
     @MainActor private func setNetworkError() {
-        setError(text: "Error", description: "Please, try again later.")
+        setError(
+            title: HomeViewModelStrings.errorTitle,
+            description: HomeViewModelStrings.errorDescription
+        )
     }
     
     /// Set error state and add error text and description.
     /// - Parameters:
     ///   - text: Error text.
     ///   - description: Error description.
-    @MainActor private func setError(text: String, description: String) {
+    @MainActor private func setError(title: String, description: String) {
         state = .error
-        errorText = text
+        errorText = title
         errorDescription = description
     }
     

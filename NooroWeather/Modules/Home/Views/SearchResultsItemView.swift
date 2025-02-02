@@ -15,7 +15,7 @@ struct SearchResultsItemView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(name)
                     .frame(height: 30)
                     .padding(.bottom, 12)

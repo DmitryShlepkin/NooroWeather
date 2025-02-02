@@ -9,18 +9,17 @@ import SwiftUI
 
 struct SearchInputView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel    
-    @State var searchText: String = ""
+    @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
         HStack {
             HStack {
                 TextField(
                     "",
-                    text: $searchText,
+                    text: $viewModel.searchText,
                     prompt: Text(viewModel.searchPlaceholderText).foregroundColor(Color.weather.textSecondary)
                 )
-                    .onChange(of: searchText) { oldState, newState in
+                    .onChange(of: viewModel.searchText) { oldState, newState in
                         viewModel.searchTextPublisher.send(newState)
                     }
                     .foregroundColor(Color.weather.textPrimary)
