@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchInputView: View {
     
+    @EnvironmentObject var viewModel: HomeViewModel
     @Binding var searchText: String
     let placeholderText: String
     
@@ -20,6 +21,9 @@ struct SearchInputView: View {
                     text: $searchText,
                     prompt: Text(placeholderText).foregroundColor(Color.weather.textSecondary)
                 )
+                    .onChange(of: searchText) { oldState, newState in
+                        viewModel.searchTextPublisher.send(newState)
+                    }
                     .foregroundColor(Color.weather.textPrimary)
                     .autocorrectionDisabled(true)
                 Image("icon.search")

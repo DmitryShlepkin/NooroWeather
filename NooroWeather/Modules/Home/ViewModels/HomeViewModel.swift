@@ -26,6 +26,7 @@ final class HomeViewModel: ObservableObject {
     @Dependency var persistenceManager: PersistenceManagable?
     
     var state: HomeState = .empty
+    let searchTextPublisher = PassthroughSubject<String, Never>()
     var cancellables = Set<AnyCancellable>()
     
     let emptyTitle = "No City Selected"
@@ -52,15 +53,17 @@ final class HomeViewModel: ObservableObject {
     
     /// Subscribe to Search Text Input chage.
     private func subscribeToSearchText() {
-        $searchText
+        searchTextPublisher
             .debounce(for: 0.5, scheduler: RunLoop.main)
-            .sink(receiveValue: { [weak self] value in
-                if !value.isEmpty && value.count > 2 {
+            .sink(receiveValue: { [weak self] newValue in
+                if !newValue.isEmpty && newValue.count > 2 {
                     Task {
-                        await self?.fetchSearch(for: value)
+                        await self?.fetchSearch(for: newValue)
                     }
                 } else {
-                    /// Reset search
+                    Task {
+                        await self?.resetSearch()
+                    }
                 }
             })
             .store(in: &cancellables)
@@ -166,7 +169,18 @@ final class HomeViewModel: ObservableObject {
     @MainActor func resetSearchText() {
         searchText = ""
     }
-
+    
+    /// Reset search
+    @MainActor private func resetSearch() {
+        resetSearchText()
+        searchResults = []
+        if weather != nil {
+            state = .loaded(useCase: .weather)
+        } else {
+            state = .empty
+        }
+    }
+    
     /// Check for saved location in persistence container.
     private func checkForSavedLocation() {
         guard
