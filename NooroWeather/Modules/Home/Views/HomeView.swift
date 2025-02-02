@@ -14,9 +14,7 @@ struct HomeView: View {
     var body: some View {
         Text("\(viewModel.state)")
         VStack {
-            SearchInputView(
-                placeholderText: viewModel.searchPlaceholderText
-            )
+            SearchInputView()
             VStack(spacing: 0) {
                 Spacer()
                     .visible(viewModel.state == .empty || viewModel.state == .error)

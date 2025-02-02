@@ -26,7 +26,6 @@ final class HomeViewModel: ObservableObject {
     @Dependency var persistenceManager: PersistenceManagable?
     @Dependency var connectionManager: ConnectionManagable?
     
-    var state: HomeState = .empty
     var cancellables = Set<AnyCancellable>()
     
     let searchTextPublisher = PassthroughSubject<String, Never>()    
@@ -34,6 +33,7 @@ final class HomeViewModel: ObservableObject {
     let emptyDescription = "Please Search For a City"
     let searchPlaceholderText: String = "Search Location"
     
+    @Published var state: HomeState = .empty
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
     @Published var errorText: String = ""
@@ -139,13 +139,13 @@ extension HomeViewModel {
         }
         state = .loading(useCase: .weather)
         do {
-            guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
+            guard let currentWeather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
                 await setNetworkError()
                 return
             }
-            state = .loaded(useCase: .weather)
             await MainActor.run {
-                self.weather = weather
+                state = .loaded(useCase: .weather)
+                weather = currentWeather
             }
         } catch {
             await setNetworkError()
@@ -154,15 +154,17 @@ extension HomeViewModel {
     
     /// Fetch location search.
     private func fetchSearch(for query: String) async {
-        state = .loading(useCase: .search)
+        await MainActor.run {
+            state = .loading(useCase: .search)
+        }
         do {
-            guard let searchResults = try await weatherApiManager?.fetchSearch(for: query) else {
+            guard let results = try await weatherApiManager?.fetchSearch(for: query) else {
                 await setNetworkError()
                 return
             }
-            state = .loaded(useCase: .search)
             await MainActor.run {
-                self.searchResults = searchResults
+                state = .loaded(useCase: .search)
+                searchResults = results
             }
             await self.fetchWeatherForSearchResults()
         } catch {
@@ -222,9 +224,12 @@ extension HomeViewModel {
     @MainActor private func reset() {
         if weather != nil {
             state = .loaded(useCase: .weather)
+            print("state", state)
         } else {
             state = .empty
+            print("state", state)
         }
+        print(">>>>>", state)
     }
 
     /// Check for saved location in persistence container.

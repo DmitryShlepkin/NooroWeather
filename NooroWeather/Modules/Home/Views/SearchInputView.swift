@@ -11,7 +11,6 @@ struct SearchInputView: View {
     
     @EnvironmentObject var viewModel: HomeViewModel    
     @State var searchText: String = ""
-    let placeholderText: String
     
     var body: some View {
         HStack {
@@ -19,7 +18,7 @@ struct SearchInputView: View {
                 TextField(
                     "",
                     text: $searchText,
-                    prompt: Text(placeholderText).foregroundColor(Color.weather.textSecondary)
+                    prompt: Text(viewModel.searchPlaceholderText).foregroundColor(Color.weather.textSecondary)
                 )
                     .onChange(of: searchText) { oldState, newState in
                         viewModel.searchTextPublisher.send(newState)
@@ -39,8 +38,6 @@ struct SearchInputView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    @ObservedObject var viewModel = HomeViewModel()
-    SearchInputView(
-        placeholderText: viewModel.searchPlaceholderText
-    )
+    SearchInputView()
+        .environmentObject(HomeViewModel())
 }

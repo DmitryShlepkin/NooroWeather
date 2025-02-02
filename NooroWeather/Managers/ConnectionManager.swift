@@ -17,10 +17,10 @@ class ConnectionManager: ConnectionManagable, ObservableObject {
 
     private let networkMonitor = NWPathMonitor()
     private let workerQueue = DispatchQueue(label: "Monitor")
-    
+
+    let connectionPublisher = PassthroughSubject<Bool, Never>()
     var isConnected = false
-    var connectionPublisher = PassthroughSubject<Bool, Never>()
-    
+
     init() {
         networkMonitor.pathUpdateHandler = { [weak self] path in
             let isConnected = path.status == .satisfied
