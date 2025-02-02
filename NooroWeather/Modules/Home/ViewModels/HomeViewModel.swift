@@ -24,11 +24,12 @@ final class HomeViewModel: ObservableObject {
     
     @Dependency var weatherApiManager: WeatherApiManagable?
     @Dependency var persistenceManager: PersistenceManagable?
+    @Dependency var connectionManager: ConnectionManagable?
     
     var state: HomeState = .empty
     var cancellables = Set<AnyCancellable>()
     
-    let searchTextPublisher = PassthroughSubject<String, Never>()
+    let searchTextPublisher = PassthroughSubject<String, Never>()    
     let emptyTitle = "No City Selected"
     let emptyDescription = "Please Search For a City"
     let searchPlaceholderText: String = "Search Location"
@@ -45,6 +46,7 @@ final class HomeViewModel: ObservableObject {
     
     init() {
         subscribeToSearchText()
+        subscribeToConnectionManager()
         checkForSavedLocation()
     }
     
@@ -53,7 +55,13 @@ final class HomeViewModel: ObservableObject {
         self.searchResults = searchResults
     }
     
-    /// Subscribe to Search Text Input chage.
+}
+
+
+// MARK: - Subscriptions
+extension HomeViewModel {
+    
+    /// Subscribe to search text input chage.
     private func subscribeToSearchText() {
         searchTextPublisher
             .debounce(for: 0.5, scheduler: RunLoop.main)
@@ -63,14 +71,67 @@ final class HomeViewModel: ObservableObject {
                         await self?.fetchSearch(for: newValue)
                     }
                 } else {
+                    self?.searchResults = []
                     Task {
-                        await self?.resetSearch()
+                        await self?.reset()
                     }
                 }
             })
             .store(in: &cancellables)
     }
     
+    /// Subscribe to connection manager.
+    private func subscribeToConnectionManager() {
+        connectionManager?.connectionPublisher.sink { [weak self] value in
+            if value {
+                Task {
+                    if self?.state == .error {
+                        await self?.reset()
+                    }
+                }
+            } else {
+                Task {
+                    await self?.setError(text: "No Internet Connection", description: "Please, try again later.")
+                }
+            }
+        }
+            .store(in: &cancellables)
+    }
+    
+}
+
+
+// MARK: - Public methods
+extension HomeViewModel {
+    
+    /// Search result tap handler
+    /// - Parameters:
+    ///   - name: Location name.
+    ///   - region: Location region.
+    func didTapLocation(name: String, region: String) {
+        searchText = ""
+        Task {
+            await fetchWeather(for: name, region: region)
+            persistenceManager?.saveLocation(for: name, region: region)
+        }
+    }
+    
+    /// Convert string to URL, convert icon size from 64x64 to 128x128, add https protocol to URL.
+    /// - Parameters:
+    ///   - string: URL string.
+    /// - Returns: URL with https protocol and updated icon size.
+    func getUrlFrom(string urlString: String?) -> URL? {
+        guard var urlString else { return nil }
+        urlString = urlString.replacingOccurrences(of: "64x64", with: "128x128")
+        return URL(string: "https:\(urlString)")
+    }
+    
+}
+
+
+// MARK: - Private methods
+extension HomeViewModel {
+
     /// Fetch weather for location.
     private func fetchWeather(for value: String, region: String? = nil) async {
         var name = value
@@ -111,7 +172,7 @@ final class HomeViewModel: ObservableObject {
     }
     
     /// Fetch weather for every search result.
-    func fetchWeatherForSearchResults() async {
+    private func fetchWeatherForSearchResults() async {
         let weatherResults: [Weather?] = await withTaskGroup(
             of: Weather?.self,
             returning: [Weather?].self
@@ -158,34 +219,15 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    /// Search result tap handler
-    /// - Parameters:
-    ///   - name: Location name.
-    ///   - region: Location region.
-    func didTapLocation(name: String, region: String) {
-        Task {
-            await fetchWeather(for: name, region: region)
-            await resetSearchText()
-            persistenceManager?.saveLocation(for: name, region: region)
-        }
-    }
-
-    /// Reset search text input value.
-    @MainActor func resetSearchText() {
-        searchText = ""
-    }
-    
-    /// Reset search
-    @MainActor private func resetSearch() {
-        resetSearchText()
-        searchResults = []
+    /// Reset state to weather if data exists, or to empty.
+    @MainActor private func reset() {
         if weather != nil {
             state = .loaded(useCase: .weather)
         } else {
             state = .empty
         }
     }
-    
+
     /// Check for saved location in persistence container.
     private func checkForSavedLocation() {
         guard
@@ -198,16 +240,6 @@ final class HomeViewModel: ObservableObject {
         }
     }
   
-    /// Convert string to URL, convert icon size from 64x64 to 128x128, add https protocol to URL.
-    /// - Parameters:
-    ///   - string: URL string.
-    /// - Returns: URL with https protocol and updated icon size.
-    func getUrlFrom(string urlString: String?) -> URL? {
-        guard var urlString else { return nil }
-        urlString = urlString.replacingOccurrences(of: "64x64", with: "128x128")
-        return URL(string: "https:\(urlString)")
-    }
-    
     /// Set network error.
     @MainActor private func setNetworkError() {
         setError(text: "Error", description: "Please, try again later.")
