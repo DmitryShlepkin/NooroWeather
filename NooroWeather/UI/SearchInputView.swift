@@ -9,8 +9,8 @@ import SwiftUI
 
 struct SearchInputView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
-    @Binding var searchText: String
+    @EnvironmentObject var viewModel: HomeViewModel    
+    @State var searchText: String = ""
     let placeholderText: String
     
     var body: some View {
@@ -41,7 +41,6 @@ struct SearchInputView: View {
 #Preview(traits: .sizeThatFitsLayout) {
     @ObservedObject var viewModel = HomeViewModel()
     SearchInputView(
-        searchText: $viewModel.searchText,
         placeholderText: viewModel.searchPlaceholderText
     )
 }

@@ -34,7 +34,6 @@ final class HomeViewModel: ObservableObject {
     let emptyDescription = "Please Search For a City"
     let searchPlaceholderText: String = "Search Location"
     
-    @Published var searchText: String = ""
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
     @Published var errorText: String = ""
@@ -70,7 +69,8 @@ extension HomeViewModel {
                     Task {
                         await self?.fetchSearch(for: newValue)
                     }
-                } else {
+                }
+                if newValue.isEmpty {
                     self?.searchResults = []
                     Task {
                         await self?.reset()
@@ -109,7 +109,6 @@ extension HomeViewModel {
     ///   - name: Location name.
     ///   - region: Location region.
     func didTapLocation(name: String, region: String) {
-        searchText = ""
         Task {
             await fetchWeather(for: name, region: region)
             persistenceManager?.saveLocation(for: name, region: region)

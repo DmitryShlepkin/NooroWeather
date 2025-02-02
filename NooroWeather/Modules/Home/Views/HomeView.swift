@@ -12,9 +12,9 @@ struct HomeView: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
+        Text("\(viewModel.state)")
         VStack {
             SearchInputView(
-                searchText: $viewModel.searchText,
                 placeholderText: viewModel.searchPlaceholderText
             )
             VStack(spacing: 0) {
@@ -35,6 +35,10 @@ struct HomeView: View {
                 Spacer()
             }
                 .frame(maxHeight: .infinity)
+        }
+        .background(Color.white)
+        .onTapGesture {
+            hideKeyboard()
         }
     }
 }
