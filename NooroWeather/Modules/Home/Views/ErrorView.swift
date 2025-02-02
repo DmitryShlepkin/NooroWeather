@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct ErrorView: View {
+    
+    @EnvironmentObject var viewModel: HomeViewModel
+    
     var body: some View {
         VStack(spacing: 0) {
-            Text("Error")
+            Text(viewModel.errorText)
                 .frame(height: 45)
                 .font(Font.Poppins(weight: 600, size: 30))
                 .foregroundColor(Color.weather.textPrimary)
                 .padding(8)
-            Text("Please try again later.")
+            Text(viewModel.errorDescription)
                 .font(Font.Poppins(size: 15))
                 .foregroundColor(Color.weather.textPrimary)
         }

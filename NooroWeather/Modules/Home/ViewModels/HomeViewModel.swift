@@ -26,9 +26,9 @@ final class HomeViewModel: ObservableObject {
     @Dependency var persistenceManager: PersistenceManagable?
     
     var state: HomeState = .empty
-    let searchTextPublisher = PassthroughSubject<String, Never>()
     var cancellables = Set<AnyCancellable>()
     
+    let searchTextPublisher = PassthroughSubject<String, Never>()
     let emptyTitle = "No City Selected"
     let emptyDescription = "Please Search For a City"
     let searchPlaceholderText: String = "Search Location"
@@ -36,6 +36,8 @@ final class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
+    @Published var errorText: String = ""
+    @Published var errorDescription: String = ""
     
     var weatherImageUrl: URL? {
         getUrlFrom(string: weather?.current?.condition?.icon)
@@ -78,7 +80,7 @@ final class HomeViewModel: ObservableObject {
         state = .loading(useCase: .weather)
         do {
             guard let weather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
-                state = .error
+                await setNetworkError()
                 return
             }
             state = .loaded(useCase: .weather)
@@ -86,7 +88,7 @@ final class HomeViewModel: ObservableObject {
                 self.weather = weather
             }
         } catch {
-            state = .error
+            await setNetworkError()
         }
     }
     
@@ -95,7 +97,7 @@ final class HomeViewModel: ObservableObject {
         state = .loading(useCase: .search)
         do {
             guard let searchResults = try await weatherApiManager?.fetchSearch(for: query) else {
-                state = .error
+                await setNetworkError()
                 return
             }
             state = .loaded(useCase: .search)
@@ -104,7 +106,7 @@ final class HomeViewModel: ObservableObject {
             }
             await self.fetchWeatherForSearchResults()
         } catch {
-            state = .error
+            await setNetworkError()
         }
     }
     
@@ -157,6 +159,9 @@ final class HomeViewModel: ObservableObject {
     }
 
     /// Search result tap handler
+    /// - Parameters:
+    ///   - name: Location name.
+    ///   - region: Location region.
     func didTapLocation(name: String, region: String) {
         Task {
             await fetchWeather(for: name, region: region)
@@ -193,10 +198,29 @@ final class HomeViewModel: ObservableObject {
         }
     }
   
+    /// Convert string to URL, convert icon size from 64x64 to 128x128, add https protocol to URL.
+    /// - Parameters:
+    ///   - string: URL string.
+    /// - Returns: URL with https protocol and updated icon size.
     func getUrlFrom(string urlString: String?) -> URL? {
         guard var urlString else { return nil }
         urlString = urlString.replacingOccurrences(of: "64x64", with: "128x128")
         return URL(string: "https:\(urlString)")
+    }
+    
+    /// Set network error.
+    @MainActor private func setNetworkError() {
+        setError(text: "Error", description: "Please, try again later.")
+    }
+    
+    /// Set error state and add error text and description.
+    /// - Parameters:
+    ///   - text: Error text.
+    ///   - description: Error description.
+    @MainActor private func setError(text: String, description: String) {
+        state = .error
+        errorText = text
+        errorDescription = description
     }
     
 }
