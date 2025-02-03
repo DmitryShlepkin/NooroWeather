@@ -13,6 +13,8 @@ struct SearchResultsView: View {
     
     var body: some View {
         VStack(spacing: 12) {
+            SearchResultsEmptyView()
+                .visible(viewModel.searchResults.count == 0)
             ForEach(viewModel.searchResults, id: \.self.id) { item in
                 if let name = item.name {
                     SearchResultsItemView(
@@ -25,6 +27,7 @@ struct SearchResultsView: View {
                         }
                 }
             }
+                .visible(viewModel.searchResults.count > 0)
         }
     }
 }

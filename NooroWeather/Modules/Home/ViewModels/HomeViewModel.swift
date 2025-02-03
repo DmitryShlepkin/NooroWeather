@@ -31,6 +31,8 @@ struct HomeViewModelStrings {
     static let errorTitle = "Error"
     static let errorDescription = "Please, try again later."
     static let noconnectionTitle = "No Internet Connection"
+    static let searchEmptyTitle = "No results found"
+    static let searchEmptyDescription = "Try adjusting your search"
 }
 
 final class HomeViewModel: ObservableObject {
@@ -45,6 +47,8 @@ final class HomeViewModel: ObservableObject {
     var emptyTitle: String { HomeViewModelStrings.emptyTitle }
     var emptyDescription: String { HomeViewModelStrings.emptyDescription }
     var searchPlaceholderText: String { HomeViewModelStrings.searchPlaceholderText }
+    var searchEmptyTitle: String { HomeViewModelStrings.searchEmptyTitle }
+    var searchEmptyDescription: String { HomeViewModelStrings.searchEmptyDescription }
     
     @Published var state: HomeState = .initial
     @Published var searchText = ""
