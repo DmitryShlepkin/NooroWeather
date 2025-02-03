@@ -162,6 +162,9 @@ extension HomeViewModel {
                 await setNetworkError()
                 return
             }
+            /// Note: Added to provide smooth user experience and make demo project looking good.
+            /// I strongly advise against using it in production.
+            try await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run {
                 state = .loaded(useCase: .weather)
                 weather = currentWeather

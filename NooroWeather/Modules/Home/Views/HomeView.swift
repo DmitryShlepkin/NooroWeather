@@ -16,7 +16,10 @@ struct HomeView: View {
             SearchInputView()
             VStack(spacing: 0) {
                 Spacer()
-                    .visible(viewModel.state == .empty || viewModel.state == .error)
+                    .visible(
+                        viewModel.state == .empty ||
+                        viewModel.state == .error
+                    )
                 ErrorView()
                     .visible(viewModel.state == .error)
                 HomeEmptyView(
@@ -25,7 +28,11 @@ struct HomeView: View {
                 )
                     .visible(viewModel.state == .empty)
                 WeatherView()
-                    .visible(viewModel.state == .loaded(useCase: .weather))
+                    .visible(
+                        viewModel.state == .loaded(useCase: .weather) ||
+                        viewModel.state == .loading(useCase: .weather)
+                    )
+                    .redacted(reason: viewModel.state == .loading(useCase: .weather) ? .placeholder : .invalidated)
                     .padding(.top, 50)
                 ScrollView(.vertical, showsIndicators: false) {
                     SearchResultsView()

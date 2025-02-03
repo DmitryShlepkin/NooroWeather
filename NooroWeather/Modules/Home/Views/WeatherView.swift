@@ -20,10 +20,6 @@ struct WeatherView: View {
             }
                 .frame(width: 123, height: 123)
                 .padding(.bottom, 27)
-//            Image("image.weather.sun")
-//                .resizable()
-//                .frame(width: 123, height: 123)
-//                .padding(.bottom, 27)
             HStack {
                 Text(viewModel.weather?.location?.name ?? "")
                     .frame(height: 30)
