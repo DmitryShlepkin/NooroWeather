@@ -168,9 +168,9 @@ extension HomeViewModel {
                 await setNetworkError()
                 return
             }
-            /// Note: Added sleep to provide smooth user experience and make demo project looking good.
+            /// Note: Added sleep because service response too fast and to provide smooth user experience and make demo project looking good.
             /// I strongly advise against using it in production.
-            try await Task.sleep(nanoseconds: 1_000_000_000)
+            try await Task.sleep(for: .seconds(1))
             await MainActor.run {
                 weather = currentWeather
                 state = .loaded(useCase: .weather)
@@ -190,9 +190,9 @@ extension HomeViewModel {
                 await setNetworkError()
                 return
             }
-            /// Note: Added sleep to provide smooth user experience and make demo project looking good.
+            /// Note: Added sleep because service response too fast and to provide smooth user experience and make demo project looking good.
             /// I strongly advise against using it in production.
-            try await Task.sleep(nanoseconds: 1_000_000_000)
+            try await Task.sleep(for: .seconds(1))
             await MainActor.run {
                 state = .loaded(useCase: .search)
                 searchResults = results
