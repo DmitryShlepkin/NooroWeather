@@ -43,7 +43,7 @@ But in case of need to use more presise caching mechanisms better create manager
 
 I used UserDefaults for persistence because I don't want to overcomplicate demo project with SwiftData/CoreData or any other 3rd-party libraries.
 
-I used configuration file to keep API keys, but in real-life project I probably would use on-demand resources, because more safe way to keep api keys outside package.
+I used configuration file to keep API keys, but in real-life project I would probably use on-demand resources because it's much safer to keep API keys outside the package.
 
 # Task
 
