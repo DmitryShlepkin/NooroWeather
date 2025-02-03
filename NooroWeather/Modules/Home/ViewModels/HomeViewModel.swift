@@ -14,6 +14,7 @@ enum HomeUseCase {
 }
 
 enum HomeState: Equatable {
+    case initial
     case loading(useCase: HomeUseCase)
     case loaded(useCase: HomeUseCase)
     case empty
@@ -43,9 +44,9 @@ final class HomeViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
     var emptyTitle: String { HomeViewModelStrings.emptyTitle }
     var emptyDescription: String { HomeViewModelStrings.emptyDescription }
-    var searchPlaceholderText: String { HomeViewModelStrings.searchPlaceholderText}
+    var searchPlaceholderText: String { HomeViewModelStrings.searchPlaceholderText }
     
-    @Published var state: HomeState = .empty
+    @Published var state: HomeState = .initial
     @Published var searchText = ""
     @Published var weather: Weather?
     @Published var searchResults: [Search] = []
@@ -156,18 +157,19 @@ extension HomeViewModel {
         }
         await MainActor.run {
             state = .loading(useCase: .weather)
+            weather = nil
         }
         do {
             guard let currentWeather = try await weatherApiManager?.fetchCurrentWeather(for: name) else {
                 await setNetworkError()
                 return
             }
-            /// Note: Added to provide smooth user experience and make demo project looking good.
+            /// Note: Added sleep to provide smooth user experience and make demo project looking good.
             /// I strongly advise against using it in production.
             try await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run {
-                state = .loaded(useCase: .weather)
                 weather = currentWeather
+                state = .loaded(useCase: .weather)
             }
         } catch {
             await setNetworkError()
@@ -184,6 +186,9 @@ extension HomeViewModel {
                 await setNetworkError()
                 return
             }
+            /// Note: Added sleep to provide smooth user experience and make demo project looking good.
+            /// I strongly advise against using it in production.
+            try await Task.sleep(nanoseconds: 1_000_000_000)
             await MainActor.run {
                 state = .loaded(useCase: .search)
                 searchResults = results
@@ -244,6 +249,7 @@ extension HomeViewModel {
 
     /// Reset state to weather if data exists, or to empty.
     @MainActor private func reset() {
+        guard state != .loaded(useCase: .weather), state != .loading(useCase: .weather) else { return }
         if weather != nil {
             state = .loaded(useCase: .weather)
         } else {
@@ -252,10 +258,12 @@ extension HomeViewModel {
     }
 
     /// Check for saved location in persistence container.
+    /// If no saved weater set state to empty.
     private func checkForSavedLocation() {
         guard
             let location = persistenceManager?.loadLocation(),
             let name = location.name else {
+            state = .empty
             return
         }
         Task {

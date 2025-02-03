@@ -28,12 +28,11 @@ struct HomeView: View {
                 )
                     .visible(viewModel.state == .empty)
                 WeatherView()
-                    .visible(
-                        viewModel.state == .loaded(useCase: .weather) ||
-                        viewModel.state == .loading(useCase: .weather)
-                    )
-                    .redacted(reason: viewModel.state == .loading(useCase: .weather) ? .placeholder : .invalidated)
+                    .visible(viewModel.state == .loading(useCase: .weather) || viewModel.state == .loaded(useCase: .weather))
+                    .redacted(reason: viewModel.state == .loading(useCase: .weather) ? .placeholder : [])
                     .padding(.top, 50)
+                SearchResultsSkeletonView()
+                    .visible(viewModel.state == .loading(useCase: .search))
                 ScrollView(.vertical, showsIndicators: false) {
                     SearchResultsView()
                 }

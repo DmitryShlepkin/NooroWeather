@@ -12,7 +12,7 @@ struct SearchResultsView: View {
     @EnvironmentObject var viewModel: HomeViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
             ForEach(viewModel.searchResults, id: \.self.id) { item in
                 if let name = item.name {
                     SearchResultsItemView(
