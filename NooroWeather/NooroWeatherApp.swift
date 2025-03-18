@@ -18,16 +18,15 @@ struct NooroWeatherApp: App {
         WindowGroup {
             HomeView()
                 .preferredColorScheme(.light)
-                .environmentObject(HomeViewModel())
         }
     }
     
     private func registerDependencies() {
-        DependencyContainer.register(type: NetworkManagable.self, NetworkManager())
-        DependencyContainer.register(type: ConfigurationManagable.self, ConfigurationManager())
-        DependencyContainer.register(type: WeatherApiManagable.self, WeatherApiManager())
-        DependencyContainer.register(type: PersistenceManagable.self, PersistenceManager())
-        DependencyContainer.register(type: ConnectionManagable.self, ConnectionManager())
+        DependencyManager.register(type: NetworkManagable.self, NetworkManager())
+        DependencyManager.register(type: ConfigurationManagable.self, ConfigurationManager())
+        DependencyManager.register(type: WeatherApiManagable.self, WeatherApiManager())
+        DependencyManager.register(type: PersistenceManagable.self, PersistenceManager())
+        DependencyManager.register(type: ConnectionManagable.self, ConnectionManager())
     }
     
 }

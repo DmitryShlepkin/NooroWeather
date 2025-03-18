@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WeatherStatsView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     var body: some View {
         HStack(spacing: 30) {
@@ -34,6 +34,5 @@ struct WeatherStatsView: View {
 }
 
 #Preview {
-    WeatherStatsView()
-        .environmentObject(HomeViewModel())
+    WeatherStatsView(viewModel: HomeViewModel())
 }

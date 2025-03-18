@@ -9,32 +9,32 @@ import SwiftUI
 
 struct HomeView: View {
         
-    @EnvironmentObject var viewModel: HomeViewModel
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         VStack {
-            SearchInputView()
+            SearchInputView(viewModel: viewModel)
             VStack(spacing: 0) {
                 Spacer()
                     .visible(
                         viewModel.state == .empty ||
                         viewModel.state == .error
                     )
-                ErrorView()
+                ErrorView(viewModel: viewModel)
                     .visible(viewModel.state == .error)
                 HomeEmptyView(
                     title: viewModel.emptyTitle,
                     description: viewModel.emptyDescription
                 )
                     .visible(viewModel.state == .empty)
-                WeatherView()
+                WeatherView(viewModel: viewModel)
                     .visible(viewModel.state == .loading(useCase: .weather) || viewModel.state == .loaded(useCase: .weather))
                     .redacted(reason: viewModel.state == .loading(useCase: .weather) ? .placeholder : [])
                     .padding(.top, 50)
                 SearchResultsSkeletonView()
                     .visible(viewModel.state == .loading(useCase: .search))
                 ScrollView(.vertical, showsIndicators: false) {
-                    SearchResultsView()
+                    SearchResultsView(viewModel: viewModel)
                 }
                     .visible(viewModel.state == .loaded(useCase: .search))
                 Spacer()
@@ -50,5 +50,4 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-        .environmentObject(HomeViewModel())
 }

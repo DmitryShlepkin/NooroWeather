@@ -9,11 +9,11 @@ import SwiftUI
 
 struct SearchResultsView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     var body: some View {
         VStack(spacing: 12) {
-            SearchResultsEmptyView()
+            SearchResultsEmptyView(viewModel: viewModel)
                 .visible(viewModel.searchResults.count == 0)
             ForEach(viewModel.searchResults, id: \.self.id) { item in
                 if let name = item.name {
@@ -33,10 +33,9 @@ struct SearchResultsView: View {
 }
 
 #Preview {
-    SearchResultsView()
-        .environmentObject(HomeViewModel(searchResults: [
-            .init(id: 1, name: "Columbus", region: "Ohio", temp_c: nil),
-            .init(id: 2, name: "Cleveland", region: "Ohio", temp_c: nil),
-            .init(id: 3, name: "Cincinnati", region: "Ohio", temp_c: nil)
-        ]))
+    SearchResultsView(viewModel: HomeViewModel(searchResults: [
+        .init(id: 1, name: "Columbus", region: "Ohio", temp_c: nil),
+        .init(id: 2, name: "Cleveland", region: "Ohio", temp_c: nil),
+        .init(id: 3, name: "Cincinnati", region: "Ohio", temp_c: nil)
+    ]))
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ErrorView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     var body: some View {
         VStack(spacing: 0) {

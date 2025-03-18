@@ -12,7 +12,7 @@ import SwiftUI
 
 struct SearchResultsEmptyView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -30,6 +30,5 @@ struct SearchResultsEmptyView: View {
 }
 
 #Preview {
-    SearchResultsEmptyView()
-        .environmentObject(HomeViewModel())
+    SearchResultsEmptyView(viewModel: HomeViewModel())
 }

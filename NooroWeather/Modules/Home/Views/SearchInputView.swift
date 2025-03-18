@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchInputView: View {
     
-    @EnvironmentObject var viewModel: HomeViewModel
+    @ObservedObject var viewModel: HomeViewModel
     
     var body: some View {
         HStack {
@@ -37,6 +37,5 @@ struct SearchInputView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    SearchInputView()
-        .environmentObject(HomeViewModel())
+    SearchInputView(viewModel: HomeViewModel())
 }
